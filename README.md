@@ -1,6 +1,6 @@
 AI-Humanizer
 
-This application is an AI humanizer you can use to bypass having to purchase subscriptions for sites like rewritify or any other AI text Humanizer
+This application is an AI humanizer completely made in Python. You can use to bypass having to purchase subscriptions for sites like rewritify or any other AI text Humanizer
 
 In this app you have the ability to:
 
