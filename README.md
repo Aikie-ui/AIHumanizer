@@ -12,7 +12,7 @@ Choose save location
 To-Do-List:
 
 - [ ] Improve GUI
-- [ ] Add ability to change which file to save essay as
+- [ ] Add ability to change which file to save essay as other file types
 - [ ] Show preview of output option
 - [ ] Add some more features to avoid AI detection
 
