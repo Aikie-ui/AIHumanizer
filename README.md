@@ -13,6 +13,8 @@ To-Do-List:
 
 - [ ] Improve GUI
 - [ ] Add ability to change which file to save essay as other file types - PDF, RTF, ODT, TXT etc
+- [ ] Add the ability to choose to double space or not
+- [ ] Add other essay formatting options
 - [ ] Show preview of output option
 - [ ] Add some more features to avoid AI detection
 - [ ] Add AI detection option feature
