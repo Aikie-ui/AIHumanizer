@@ -167,9 +167,44 @@ def generate():
 root = tk.Tk()
 root.title("AI Humanizer")
 
-tk.Label(root, text="Paste Essay:").pack()
-essay_box = tk.Text(root, height=15, width=80)
+# SPLIT SCREEN CONTAINER
+main_frame = tk.Frame(root)
+main_frame.pack()
+
+#LEFT SIDE
+left_frame = tk.Frame(main_frame)
+left_frame.pack(side=tk.LEFT, padx=10)
+
+tk.Label(left_frame, text="Original Essay:").pack()
+essay_box = tk.Text(left_frame, height=20, width=50)
 essay_box.pack()
+
+#RIGHT SIDE
+right_frame = tk.Frame(main_frame)
+tk.Label(right_frame, text="Humanized Essay:").pack()
+
+# OUTPUT BOX
+output_box = tk.Text(right_frame, height=20, width=50)
+output_box.pack()
+
+# SHOW PROCESSED TEXT
+def show_new_essay():
+    text = essay_box.get("1.0", tk.END).strip()
+
+    if not text:
+        messagebox.showerror("Error", "Please enter an essay first")
+        return
+    
+    processed = humanize_text(text)
+    processed = additional_humanization(processed)
+
+    if not right_frame.winfo_ismapped():
+        right_frame.pack(side=tk.LEFT, padx=10)
+
+    output_box.delete("1.0", tk.END)
+    output_box.insert("1.0", processed)
+
+
 
 tk.Label(root, text="File Name:").pack()
 filename_entry = tk.Entry(root)
@@ -201,6 +236,8 @@ date_entry.pack()
 title_entry = tk.Entry(root)
 title_entry.insert(0, "Essay Title")
 title_entry.pack()
+
+tk.Button(root, text="Show New Essay", command=show_new_essay).pack(pady=5)
 
 tk.Button(root, text="Generate Document", command=generate).pack(pady=10)
 
