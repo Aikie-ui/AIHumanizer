@@ -8,6 +8,8 @@ from docx.shared import Pt
 from docx.oxml.ns import qn
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
+from docx2pdf import convert
+
 # --- SENTENCE SPLIT ---
 def split_sentences(text):
     return re.split(r'(?<=[.!?]) +', text)
@@ -93,8 +95,16 @@ def apply_mla(doc, text, name, instructor, course, date, title):
         p = doc.add_paragraph(para)
         format_paragraph(p)
 
-# --- SAVE ---
-def save_doc(text, file_path, style, name, instructor, course, date, title):
+# --- NEW SAVE FUNCTION ---
+def save_file(text, file_path, filetype, style, name, instructor, course, date, title):
+
+    # --- TXT ---
+    if filetype == "TXT":
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        return
+
+    # --- DOCX / PDF ---
     doc = Document()
 
     if style == "APA":
@@ -102,13 +112,22 @@ def save_doc(text, file_path, style, name, instructor, course, date, title):
     else:
         apply_mla(doc, text, name, instructor, course, date, title)
 
-    doc.save(file_path)
+    # Save DOCX first
+    docx_path = file_path.replace(".pdf", ".docx")
+    doc.save(docx_path)
+
+    # Convert to PDF if needed
+    if filetype == "PDF":
+        convert(docx_path, file_path)
+        os.remove(docx_path)
 
 # --- GENERATE ---
 def generate():
     text = essay_box.get("1.0", tk.END).strip()
     filename = filename_entry.get()
     style = format_var.get()
+    filetype = filetype_var.get()
+
     name = name_entry.get()
     instructor = instructor_entry.get()
     course = course_entry.get()
@@ -119,20 +138,28 @@ def generate():
         messagebox.showerror("Error", "Essay and file name are required")
         return
 
+    # FILE TYPE MAPPING
+    ext_map = {
+        "DOCX": ".docx",
+        "PDF": ".pdf",
+        "TXT": ".txt"
+    }
+
+
     # --- CHOOSE SAVE LOCATION ---
     file_path = filedialog.asksaveasfilename(
-        defaultextension=".docx",
-        filetypes=[("Word Document", "*.docx")],
-        initialfile=filename
+        defaultextension=ext_map[filetype],
+        initialfile=filename + ext_map[filetype],
+        filetypes=[(f"{filetype} file", f"*{ext_map[filetype]}")]
     )
 
     if not file_path:
-        return  # user canceled
+        return  # USER CANCELED
 
     processed = humanize_text(text)
     processed = additional_humanization(processed)
 
-    save_doc(processed, file_path, style, name, instructor, course, date, title)
+    save_file(processed, file_path, filetype, style, name, instructor, course, date, title)
 
     messagebox.showinfo("Success", f"Saved to:\n{file_path}")
 
@@ -147,6 +174,10 @@ essay_box.pack()
 tk.Label(root, text="File Name:").pack()
 filename_entry = tk.Entry(root)
 filename_entry.pack()
+
+tk.Label(root, text="File Type:").pack()
+filetype_var = tk.StringVar(value="DOCX")
+ttk.Combobox(root, textvariable=filetype_var, values=["DOCX", "PDF", "TXT"]).pack()
 
 format_var = tk.StringVar(value="APA")
 ttk.Combobox(root, textvariable=format_var, values=["APA", "MLA"]).pack()
