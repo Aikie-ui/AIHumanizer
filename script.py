@@ -154,10 +154,14 @@ def generate():
     )
 
     if not file_path:
-        return  # USER CANCELED
+        return
 
-    processed = humanize_text(text)
-    processed = additional_humanization(processed)
+    # 🔁 CHANGED → CONDITIONAL HUMANIZATION
+    if humanizer_var.get() == "ON":
+        processed = humanize_text(text)
+        processed = additional_humanization(processed)
+    else:
+        processed = text
 
     save_file(processed, file_path, filetype, style, name, instructor, course, date, title)
 
@@ -195,16 +199,17 @@ def show_new_essay():
         messagebox.showerror("Error", "Please enter an essay first")
         return
     
-    processed = humanize_text(text)
-    processed = additional_humanization(processed)
+    if humanizer_var.get() == "ON":
+        processed = humanize_text(text)
+        processed = additional_humanization(processed)
+    else:
+        processed = text
 
     if not right_frame.winfo_ismapped():
         right_frame.pack(side=tk.LEFT, padx=10)
 
     output_box.delete("1.0", tk.END)
     output_box.insert("1.0", processed)
-
-
 
 tk.Label(root, text="File Name:").pack()
 filename_entry = tk.Entry(root)
@@ -216,6 +221,11 @@ ttk.Combobox(root, textvariable=filetype_var, values=["DOCX", "PDF", "TXT"]).pac
 
 format_var = tk.StringVar(value="APA")
 ttk.Combobox(root, textvariable=format_var, values=["APA", "MLA"]).pack()
+
+# New humanizer tool toggle
+tk.Label(root, text ="Use AI Humanizer:").pack()
+humanizer_var = tk.StringVar(value="ON")
+ttk.Combobox(root, textvariable=humanizer_var, values=["ON", "OFF"]).pack()
 
 name_entry = tk.Entry(root)
 name_entry.insert(0, "Your Name")
